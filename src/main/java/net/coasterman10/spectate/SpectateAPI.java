@@ -16,8 +16,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Spectate extends JavaPlugin {
-    private static Spectate instance;
+public class SpectateAPI extends JavaPlugin {
+    private static SpectateAPI instance;
 
     private Collection<UUID> spectators = new HashSet<UUID>();
 
