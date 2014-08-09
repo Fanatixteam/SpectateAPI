@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,33 +32,45 @@ public class SpectateAPI extends JavaPlugin {
         instance = null;
     }
 
+    /**
+     * Puts a player into spectator mode. The player will be allowed to fly and hidden from all other players, as well
+     * as unable to interact with the world in any way.
+     * 
+     * @param p The player to put into spectator mode
+     */
     public static void addSpectator(Player p) {
-        addSpectator(p.getUniqueId());
+        for (Player other : Bukkit.getOnlinePlayers())
+            other.hidePlayer(p);
+        p.setAllowFlight(true);
+        instance.spectators.add(p.getUniqueId());
     }
 
-    public static void addSpectator(UUID id) {
-        instance.spectators.add(id);
-    }
-
+    /**
+     * Removes a player from spectator mode. The player will be no longer hidden or allowed to fly, and once again
+     * allowed to interact with the world.
+     * 
+     * @param p The player to remove from spectator mode
+     */
     public static void removeSpectator(Player p) {
-        addSpectator(p.getUniqueId());
+        for (Player other : Bukkit.getOnlinePlayers())
+            other.showPlayer(p);
+        p.setAllowFlight(false);
+        instance.spectators.remove(p.getUniqueId());
     }
 
-    public static void removeSpectator(UUID id) {
-        instance.spectators.remove(id);
-    }
-
+    /**
+     * Checks whether a player is in spectator mode
+     * 
+     * @param p The player to check
+     * @return Whether the player is a spectator
+     */
     public static boolean isSpectator(Player p) {
-        return isSpectator(p.getUniqueId());
+        return instance.spectators.contains(p.getUniqueId());
     }
 
-    public static boolean isSpectator(UUID id) {
-        return instance.spectators.contains(id);
-    }
-    
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        spectators.remove(e.getPlayer().getUniqueId());
+        removeSpectator(e.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
